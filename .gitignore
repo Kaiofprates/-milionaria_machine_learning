@@ -38,9 +38,7 @@ ENV/
 .streamlit/
 
 # Data files (Excel with historical data)
-*.xlsx
-*.xls
-*.csv
+
 **/data/
 
 # Models and cache

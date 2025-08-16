@@ -74,16 +74,24 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 @st.cache_data
-def load_data():
+def load_data(uploaded_file=None):
     """Carrega os dados com cache"""
-    file_path = "+Milionária (2).xlsx"
-    if not os.path.exists(file_path):
-        st.warning("Arquivo Excel não encontrado. Usando dados de exemplo.")
-    
-    loader = MilionariaDataLoader(file_path)
-    data = loader.load_data()
-    processed_data = loader.preprocess_data()
-    return loader, data, processed_data
+    if uploaded_file is not None:
+        # Usa arquivo carregado pelo usuário
+        loader = MilionariaDataLoader(uploaded_file)
+        data = loader.load_data()
+        processed_data = loader.preprocess_data()
+        return loader, data, processed_data
+    else:
+        # Tenta carregar arquivo local
+        file_path = "+Milionária (2).xlsx"
+        if not os.path.exists(file_path):
+            st.warning("Arquivo Excel não encontrado. Usando dados de exemplo.")
+        
+        loader = MilionariaDataLoader(file_path)
+        data = loader.load_data()
+        processed_data = loader.preprocess_data()
+        return loader, data, processed_data
 
 def display_prediction(prediction):
     """Exibe a predição de forma visual"""
@@ -133,21 +141,60 @@ def main():
     # Header
     st.markdown('<h1 class="main-header">🍀 Dashboard +Milionária ML</h1>', unsafe_allow_html=True)
     
+    # Data source info
+    st.info("""
+    📥 **Para usar dados reais:** Baixe o arquivo Excel atualizado da Caixa Econômica Federal e coloque na pasta do projeto com o nome `+Milionária (2).xlsx`
+    
+    🔗 **Link oficial:** [Baixar dados históricos da +Milionária](https://loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx)
+    
+    ⚠️ **Importante:** O arquivo é atualizado automaticamente após cada sorteio. Baixe sempre a versão mais recente para análises precisas.
+    """)
+    
     # Sidebar
     st.sidebar.title("⚙️ Configurações")
     
+    # Upload de arquivo
+    st.sidebar.subheader("📁 Carregar Dados")
+    uploaded_file = st.sidebar.file_uploader(
+        "Faça upload do arquivo Excel da +Milionária:",
+        type=['xlsx'],
+        help="Baixe o arquivo oficial em: loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx"
+    )
+    
+    if uploaded_file is not None:
+        st.sidebar.success("✅ Arquivo carregado com sucesso!")
+        st.sidebar.info(f"📄 Arquivo: {uploaded_file.name}")
+    
     # Carrega dados
     try:
-        loader, data, processed_data = load_data()
+        loader, data, processed_data = load_data(uploaded_file)
         data_info = loader.get_data_info()
         
-        st.sidebar.success(f"✅ {data_info['total_sorteios']} sorteios carregados")
+        if uploaded_file is not None:
+            st.sidebar.success(f"✅ {data_info['total_sorteios']} sorteios do arquivo carregado")
+        else:
+            st.sidebar.success(f"✅ {data_info['total_sorteios']} sorteios carregados")
         
         if data_info['periodo']:
             st.sidebar.info(f"📅 Período: {data_info['periodo']['inicio']} a {data_info['periodo']['fim']}")
         
     except Exception as e:
-        st.error(f"Erro ao carregar dados: {e}")
+        if uploaded_file is None:
+            st.sidebar.error("❌ Arquivo de dados não encontrado")
+            st.sidebar.markdown("""
+            **Para usar dados reais:**
+            1. Acesse: [Site da Caixa](https://loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx)
+            2. Baixe o arquivo Excel
+            3. Use o botão acima para carregar
+            
+            **Ou:**
+            - Renomeie para: `+Milionária (2).xlsx`
+            - Coloque na pasta do projeto
+            """)
+            st.sidebar.warning("⚠️ Usando dados de exemplo")
+        else:
+            st.sidebar.error("❌ Erro ao processar arquivo carregado")
+            st.sidebar.info("Verifique se é o arquivo correto da Caixa")
         return
     
     # Menu principal
@@ -552,6 +599,22 @@ def main():
             - Distribuição por dezenas
             - Números pares/ímpares
             - Features temporais
+            """)
+            
+            st.subheader("📥 Fonte dos Dados")
+            st.markdown("""
+            **Dados Oficiais da Caixa Econômica Federal:**
+            
+            🔗 **Link direto:** [loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx](https://loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx)
+            
+            **Como obter os dados:**
+            1. Acesse o site oficial da Caixa
+            2. Procure por "Resultados" ou "Download"
+            3. Baixe o arquivo Excel com histórico completo
+            4. Renomeie para `+Milionária (2).xlsx`
+            5. Coloque na pasta raiz do projeto
+            
+            **Atualização:** O arquivo é atualizado automaticamente após cada sorteio (sábados às 20h).
             """)
             
             st.subheader("⚠️ Aviso Importante")

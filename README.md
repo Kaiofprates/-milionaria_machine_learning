@@ -42,7 +42,18 @@ pip install -r requirements.txt
 
 ### 2. Preparação dos Dados
 
-Coloque o arquivo Excel com os dados históricos da +Milionária na pasta do projeto com o nome `+Milionária (2).xlsx`.
+**📥 Baixar dados oficiais da Caixa:**
+
+1. **Acesse:** [https://loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx](https://loterias.caixa.gov.br/Paginas/Mais-Milionaria.aspx)
+2. **Procure** pela seção "Resultados" ou "Download"
+3. **Baixe** o arquivo Excel com o histórico completo dos sorteios
+4. **Renomeie** o arquivo para: `+Milionária (2).xlsx`
+5. **Coloque** na pasta raiz do projeto (mesmo diretório do `app.py`)
+
+**⚠️ Importante:** 
+- O arquivo é atualizado automaticamente após cada sorteio (sábados às 20h)
+- Baixe sempre a versão mais recente para análises precisas
+- Se não encontrar o arquivo, o sistema usará dados de exemplo para demonstração
 
 **Formato esperado do Excel:**
 - Colunas com números: `Num1`, `Num2`, `Num3`, `Num4`, `Num5`, `Num6`

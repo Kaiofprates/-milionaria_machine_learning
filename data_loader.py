@@ -6,7 +6,7 @@ import os
 class MilionariaDataLoader:
     """Carregador de dados históricos da +Milionária"""
     
-    def __init__(self, file_path: str):
+    def __init__(self, file_path):
         self.file_path = file_path
         self.data = None
         self.processed_data = None
@@ -14,8 +14,12 @@ class MilionariaDataLoader:
     def load_data(self) -> pd.DataFrame:
         """Carrega os dados do arquivo Excel"""
         try:
-            # Tenta diferentes abordagens para ler o Excel
-            if self.file_path.endswith('.xlsx'):
+            # Verifica se é um arquivo carregado (UploadedFile) ou caminho
+            if hasattr(self.file_path, 'read'):
+                # É um arquivo carregado pelo Streamlit
+                self.data = pd.read_excel(self.file_path)
+            elif isinstance(self.file_path, str) and self.file_path.endswith('.xlsx'):
+                # É um caminho de arquivo local
                 self.data = pd.read_excel(self.file_path)
             else:
                 raise ValueError("Formato de arquivo não suportado")
